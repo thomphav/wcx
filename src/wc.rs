@@ -1,7 +1,7 @@
 use prettytable::{Cell, Row, Table};
 use std::fs::{metadata, File};
 use std::io::{BufRead, BufReader};
-use std::path::Path;
+use std::path::PathBuf;
 
 struct TableHeaders {
     lines: &'static str,
@@ -20,17 +20,11 @@ const HEADERS: TableHeaders = TableHeaders {
 };
 
 #[derive(Default)]
-struct FlagData {
-    count: usize,
-    enabled: bool,
-}
-
-#[derive(Default)]
-struct Data {
-    bytes: FlagData,
-    lines: FlagData,
-    chars: FlagData,
-    words: FlagData,
+struct EnableTable {
+    lines: bool,
+    bytes: bool,
+    words: bool,
+    chars: bool,
 }
 
 pub fn invoke(
@@ -38,82 +32,90 @@ pub fn invoke(
     lines: bool,
     chars: bool,
     words: bool,
-    file: &Path,
+    files: &Vec<PathBuf>,
 ) -> anyhow::Result<()> {
+    let mut enable_table: EnableTable = Default::default();
     let default = !bytes && !lines && !chars && !words;
-    let metadata = metadata(file)?;
 
-    let mut data: Data = Default::default();
+    if lines || default {
+        enable_table.lines = true;
+    };
 
-    if bytes || default {
-        data.bytes.enabled = true;
-        data.bytes.count = metadata.len() as usize;
+    if chars {
+        enable_table.chars = true;
+    } else if bytes || default {
+        enable_table.bytes = true;
     }
 
-    if lines || chars || words || default {
-        let reader = BufReader::new(File::open(file)?);
-
-        if lines || default {
-            data.lines.enabled = true;
-            data.lines.count = reader.lines().count();
-        }
-
-        let mut reader = BufReader::new(File::open(file)?);
-
-        // for byte in reader.bytes() {
-        if chars && !bytes {
-            data.chars.enabled = true;
-            data.chars.count = 88;
-        }
-
-        if words || default {
-            let mut buffer = Vec::new();
-            let mut inc = 0;
-            while reader.read_until(b' ', &mut buffer)? != 0 {
-                inc += 1;
-            }
-            data.words.enabled = true;
-            data.words.count = inc;
-        }
-        // }
+    if words || default {
+        enable_table.words = true;
     }
 
-    assert!(!(data.bytes.enabled & data.chars.enabled));
+    assert!(!(enable_table.bytes & enable_table.chars));
 
-    let mut header: Vec<Cell> = Vec::new();
-    let mut values: Vec<Cell> = Vec::new();
     let mut table = Table::new();
+    let mut headers: Vec<Cell> = Vec::new();
 
-    if data.lines.enabled {
-        let out = format!("{}", data.lines.count);
-        header.push(Cell::new(HEADERS.lines));
-        values.push(Cell::new(&out));
+    if enable_table.lines {
+        headers.push(Cell::new(HEADERS.lines));
+    };
+
+    if enable_table.bytes {
+        headers.push(Cell::new(HEADERS.bytes));
     }
 
-    if data.words.enabled {
-        let out = format!("{}", data.words.count);
-        header.push(Cell::new(HEADERS.words));
-        values.push(Cell::new(&out));
+    if enable_table.chars {
+        headers.push(Cell::new(HEADERS.chars));
     }
 
-    if data.bytes.enabled {
-        let out = format!("{}", data.bytes.count);
-        header.push(Cell::new(HEADERS.bytes));
-        values.push(Cell::new(&out));
+    if enable_table.words {
+        headers.push(Cell::new(HEADERS.words));
     }
 
-    if data.chars.enabled {
-        let out = format!("{}", data.chars.count);
-        header.push(Cell::new(HEADERS.chars));
-        values.push(Cell::new(&out));
+    headers.push(Cell::new(HEADERS.file));
+    table.add_row(Row::new(headers));
+
+    for file in files {
+        let mut row_values: Vec<Cell> = Vec::new();
+
+        if enable_table.lines {
+            let lines_reader = BufReader::new(File::open(file)?);
+            let count = lines_reader.lines().count();
+            let out = format!("{}", count);
+            row_values.push(Cell::new(&out));
+        }
+
+        if enable_table.bytes {
+            let metadata = metadata(file)?;
+            let count = metadata.len() as usize;
+            let out = format!("{}", count);
+            row_values.push(Cell::new(&out));
+        }
+
+        if enable_table.chars || enable_table.words {
+            if enable_table.chars {
+                let count = 88; // todo
+                let out = format!("{}", count);
+                row_values.push(Cell::new(&out));
+            }
+
+            if enable_table.words {
+                let mut words_reader = BufReader::new(File::open(file)?);
+                let mut buffer = Vec::new();
+                let mut count = 0;
+                while words_reader.read_until(b' ', &mut buffer)? != 0 {
+                    count += 1;
+                }
+                let out = format!("{}", count);
+                row_values.push(Cell::new(&out));
+            }
+        }
+
+        let fileout = format!("{}", file.display());
+        row_values.push(Cell::new(&fileout));
+        table.add_row(Row::new(row_values));
     }
 
-    let fileout = format!("{}", file.display());
-    header.push(Cell::new(HEADERS.file));
-    values.push(Cell::new(&fileout));
-
-    table.add_row(Row::new(header));
-    table.add_row(Row::new(values));
     table.printstd();
     Ok(())
 }

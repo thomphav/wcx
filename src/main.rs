@@ -24,7 +24,8 @@ enum Command {
         #[arg(short = 'w')]
         words: bool,
 
-        file: PathBuf,
+        #[arg(required = true, value_name = "FILE", value_parser, num_args = 1..)]
+        files: Vec<PathBuf>,
     },
 }
 
@@ -47,8 +48,8 @@ fn run() -> anyhow::Result<()> {
             lines,
             chars,
             words,
-            file,
-        } => wc::invoke(bytes, lines, chars, words, &file)?,
+            files,
+        } => wc::invoke(bytes, lines, chars, words, &files)?,
     }
 
     Ok(())
