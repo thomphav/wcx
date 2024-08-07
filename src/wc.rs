@@ -58,22 +58,22 @@ pub fn invoke(
     let mut headers: Vec<Cell> = Vec::new();
 
     if enable_table.lines {
-        headers.push(Cell::new(HEADERS.lines));
+        headers.push(Cell::new(HEADERS.lines).style_spec("b"));
     };
 
     if enable_table.bytes {
-        headers.push(Cell::new(HEADERS.bytes));
+        headers.push(Cell::new(HEADERS.bytes).style_spec("b"));
     }
 
     if enable_table.chars {
-        headers.push(Cell::new(HEADERS.chars));
+        headers.push(Cell::new(HEADERS.chars).style_spec("b"));
     }
 
     if enable_table.words {
-        headers.push(Cell::new(HEADERS.words));
+        headers.push(Cell::new(HEADERS.words).style_spec("b"));
     }
 
-    headers.push(Cell::new(HEADERS.file));
+    headers.push(Cell::new(HEADERS.file).style_spec("b"));
     table.set_titles(Row::new(headers));
 
     let mut lines_total: usize = 0;
@@ -130,26 +130,26 @@ pub fn invoke(
 
     if enable_table.lines {
         let lines_total_out = format!("{}", lines_total);
-        totals.push(Cell::new(&lines_total_out));
+        totals.push(Cell::new(&lines_total_out).style_spec("bFg"));
     };
 
     if enable_table.bytes {
         let bytes_total_out = format!("{}", bytes_total);
-        totals.push(Cell::new(&bytes_total_out));
+        totals.push(Cell::new(&bytes_total_out).style_spec("bFg"));
     }
 
     if enable_table.chars {
         let chars_total_out = format!("{}", chars_total);
-        totals.push(Cell::new(&chars_total_out));
+        totals.push(Cell::new(&chars_total_out).style_spec("bFg"));
     }
 
     if enable_table.words {
         let words_total_out = format!("{}", words_total);
-        totals.push(Cell::new(&words_total_out));
+        totals.push(Cell::new(&words_total_out).style_spec("bFg"));
     }
 
     let total_out = "total";
-    totals.push(Cell::new(&total_out));
+    totals.push(Cell::new(&total_out).style_spec("bFg"));
 
     table.add_row(Row::new(totals));
 
