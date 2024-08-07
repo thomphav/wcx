@@ -1,4 +1,4 @@
-use prettytable::{Cell, Row, Table};
+use prettytable::{format, Cell, Row, Table};
 use std::fs::{metadata, File};
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
@@ -54,6 +54,7 @@ pub fn invoke(
     assert!(!(enable_table.bytes & enable_table.chars));
 
     let mut table = Table::new();
+    table.set_format(*format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR);
     let mut headers: Vec<Cell> = Vec::new();
 
     if enable_table.lines {
@@ -73,7 +74,12 @@ pub fn invoke(
     }
 
     headers.push(Cell::new(HEADERS.file));
-    table.add_row(Row::new(headers));
+    table.set_titles(Row::new(headers));
+
+    let mut lines_total: usize = 0;
+    let mut bytes_total: usize = 0;
+    let mut chars_total: usize = 0;
+    let mut words_total: usize = 0;
 
     for file in files {
         let mut row_values: Vec<Cell> = Vec::new();
@@ -81,6 +87,7 @@ pub fn invoke(
         if enable_table.lines {
             let lines_reader = BufReader::new(File::open(file)?);
             let count = lines_reader.lines().count();
+            lines_total += count;
             let out = format!("{}", count);
             row_values.push(Cell::new(&out));
         }
@@ -88,6 +95,7 @@ pub fn invoke(
         if enable_table.bytes {
             let metadata = metadata(file)?;
             let count = metadata.len() as usize;
+            bytes_total += count;
             let out = format!("{}", count);
             row_values.push(Cell::new(&out));
         }
@@ -95,6 +103,7 @@ pub fn invoke(
         if enable_table.chars || enable_table.words {
             if enable_table.chars {
                 let count = 88; // todo
+                chars_total += count;
                 let out = format!("{}", count);
                 row_values.push(Cell::new(&out));
             }
@@ -106,6 +115,7 @@ pub fn invoke(
                 while words_reader.read_until(b' ', &mut buffer)? != 0 {
                     count += 1;
                 }
+                words_total += count;
                 let out = format!("{}", count);
                 row_values.push(Cell::new(&out));
             }
@@ -115,6 +125,33 @@ pub fn invoke(
         row_values.push(Cell::new(&fileout));
         table.add_row(Row::new(row_values));
     }
+
+    let mut totals: Vec<Cell> = Vec::new();
+
+    if enable_table.lines {
+        let lines_total_out = format!("{}", lines_total);
+        totals.push(Cell::new(&lines_total_out));
+    };
+
+    if enable_table.bytes {
+        let bytes_total_out = format!("{}", bytes_total);
+        totals.push(Cell::new(&bytes_total_out));
+    }
+
+    if enable_table.chars {
+        let chars_total_out = format!("{}", chars_total);
+        totals.push(Cell::new(&chars_total_out));
+    }
+
+    if enable_table.words {
+        let words_total_out = format!("{}", words_total);
+        totals.push(Cell::new(&words_total_out));
+    }
+
+    let total_out = "total";
+    totals.push(Cell::new(&total_out));
+
+    table.add_row(Row::new(totals));
 
     table.printstd();
     Ok(())
