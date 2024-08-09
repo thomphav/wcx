@@ -27,6 +27,24 @@ struct EnableTable {
     chars: bool,
 }
 
+fn count_words_in_file(file: &PathBuf) -> anyhow::Result<usize> {
+    let mut words_reader = BufReader::new(File::open(file)?);
+    let mut buffer = Vec::new();
+    let mut count = 0;
+    while words_reader.read_until(b' ', &mut buffer)? != 0 {
+        count += 1;
+    }
+
+    return Ok(count);
+}
+
+fn count_chars_in_file(file: &PathBuf) -> anyhow::Result<usize> {
+    let mut chars_reader = BufReader::new(File::open(file)?);
+    let mut count = 0;
+
+    return Ok(count);
+}
+
 pub fn invoke(
     bytes: bool,
     lines: bool,
@@ -102,19 +120,16 @@ pub fn invoke(
 
         if enable_table.chars || enable_table.words {
             if enable_table.chars {
-                let count = 88; // todo
+                let count = count_chars_in_file(file)?;
+
                 chars_total += count;
                 let out = format!("{}", count);
                 row_values.push(Cell::new(&out));
             }
 
             if enable_table.words {
-                let mut words_reader = BufReader::new(File::open(file)?);
-                let mut buffer = Vec::new();
-                let mut count = 0;
-                while words_reader.read_until(b' ', &mut buffer)? != 0 {
-                    count += 1;
-                }
+                let count = count_words_in_file(file)?;
+
                 words_total += count;
                 let out = format!("{}", count);
                 row_values.push(Cell::new(&out));
@@ -155,4 +170,19 @@ pub fn invoke(
 
     table.printstd();
     Ok(())
+}
+
+#[test]
+fn test_count_words_in_example_file() {
+    let test_file_path = PathBuf::from("tests/data/test_1.txt");
+    let word_count = count_words_in_file(&test_file_path).expect("Failed to count words in file");
+
+    assert_eq!(word_count, 70);
+}
+#[test]
+fn test_count_chars_in_example_file() {
+    let test_file_path = PathBuf::from("tests/data/test_1.txt");
+    let char_count = count_chars_in_file(&test_file_path).expect("Failed to count chars in file");
+
+    assert_eq!(char_count, 448);
 }
