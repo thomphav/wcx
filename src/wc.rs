@@ -35,19 +35,10 @@ fn set_enable_table(
 ) {
     let default = !bytes && !lines && !chars && !words;
 
-    if lines || default {
-        enable_table.lines = true;
-    };
-
-    if chars {
-        enable_table.chars = true;
-    } else if bytes || default {
-        enable_table.bytes = true;
-    }
-
-    if words || default {
-        enable_table.words = true;
-    }
+    enable_table.lines = lines || default;
+    enable_table.chars = chars;
+    enable_table.bytes = (bytes || default) && !chars;
+    enable_table.words = words || default;
 }
 
 fn set_table_format(table: &mut Table) {
@@ -77,37 +68,30 @@ fn set_table_headers(table: &mut Table, enable_table: &EnableTable) {
     table.set_titles(Row::new(headers));
 }
 
+fn push_row(count: &usize, row_values: &mut Vec<Cell>) {
+    let out = format!("{}", *count);
+    row_values.push(Cell::new(&out));
+}
+
 fn set_row_values(
     enable_table: &EnableTable,
     row_values: &mut Vec<Cell>,
     file_result: &FileResult,
 ) -> anyhow::Result<()> {
     if enable_table.lines {
-        let count = file_result.lines;
-
-        let out = format!("{}", count);
-        row_values.push(Cell::new(&out));
+        push_row(&file_result.lines, row_values);
     }
 
     if enable_table.bytes {
-        let count = file_result.bytes;
-
-        let out = format!("{}", count);
-        row_values.push(Cell::new(&out));
+        push_row(&file_result.bytes, row_values);
     }
 
     if enable_table.chars {
-        let count = file_result.chars;
-
-        let out = format!("{}", count);
-        row_values.push(Cell::new(&out));
+        push_row(&file_result.chars, row_values);
     }
 
     if enable_table.words {
-        let count = file_result.words;
-
-        let out = format!("{}", count);
-        row_values.push(Cell::new(&out));
+        push_row(&file_result.words, row_values);
     }
 
     Ok(())
