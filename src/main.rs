@@ -24,7 +24,7 @@ enum Command {
         #[arg(short = 'w')]
         words: bool,
 
-        #[arg(required = true, value_name = "FILE", value_parser, num_args = 1..)]
+        #[arg(required = true, num_args = 1..)]
         files: Vec<PathBuf>,
     },
 }
