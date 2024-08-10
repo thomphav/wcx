@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 use std::{path::PathBuf, process::ExitCode};
+pub mod analyze;
 pub mod wc;
 
 #[derive(Parser, Debug)]
