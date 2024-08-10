@@ -135,6 +135,7 @@ fn set_table_headers(table: &mut Table, enable_table: &EnableTable) {
 
 fn analyze_file(file: &PathBuf, enable_table: &EnableTable) -> anyhow::Result<FileResult> {
     let mut file_result: FileResult = Default::default();
+
     if enable_table.lines {
         let count = count_lines_in_file(file)?;
         file_result.lines = count;
@@ -145,16 +146,14 @@ fn analyze_file(file: &PathBuf, enable_table: &EnableTable) -> anyhow::Result<Fi
         file_result.bytes = count;
     }
 
-    if enable_table.chars || enable_table.words {
-        if enable_table.chars {
-            let count = count_chars_in_file(file)?;
-            file_result.chars = count;
-        }
+    if enable_table.chars {
+        let count = count_chars_in_file(file)?;
+        file_result.chars = count;
+    }
 
-        if enable_table.words {
-            let count = count_words_in_file(file)?;
-            file_result.words = count;
-        }
+    if enable_table.words {
+        let count = count_words_in_file(file)?;
+        file_result.words = count;
     }
 
     Ok(file_result)
@@ -179,20 +178,18 @@ fn set_row_values(
         row_values.push(Cell::new(&out));
     }
 
-    if enable_table.chars || enable_table.words {
-        if enable_table.chars {
-            let count = count_chars_in_file(file)?;
+    if enable_table.chars {
+        let count = count_chars_in_file(file)?;
 
-            let out = format!("{}", count);
-            row_values.push(Cell::new(&out));
-        }
+        let out = format!("{}", count);
+        row_values.push(Cell::new(&out));
+    }
 
-        if enable_table.words {
-            let count = count_words_in_file(file)?;
+    if enable_table.words {
+        let count = count_words_in_file(file)?;
 
-            let out = format!("{}", count);
-            row_values.push(Cell::new(&out));
-        }
+        let out = format!("{}", count);
+        row_values.push(Cell::new(&out));
     }
 
     Ok(())
