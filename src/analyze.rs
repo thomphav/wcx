@@ -1,4 +1,4 @@
-use crate::wc::EnableTable;
+use crate::command::TableManager;
 use std::fs::{metadata, File};
 use std::io::{BufRead, BufReader, Read};
 use std::path::PathBuf;
@@ -11,7 +11,7 @@ pub struct FileResult {
     pub chars: usize,
 }
 
-pub fn analyze_file(file: &PathBuf, enable_table: &EnableTable) -> anyhow::Result<FileResult> {
+pub fn analyze_file(file: &PathBuf, enable_table: &TableManager) -> anyhow::Result<FileResult> {
     let mut file_result: FileResult = Default::default();
 
     if enable_table.lines {
@@ -56,7 +56,7 @@ fn count_words_in_file(file: &PathBuf) -> anyhow::Result<usize> {
     let mut byte = [0; 1];
     let mut word_exists: bool = false;
     let mut count = 0;
-    let delimiters = b"' '\n\t";
+    let delimiters = b"' '\n\t\r";
     while words_reader.read(&mut byte)? != 0 {
         if delimiters.contains(&byte[0]) {
             if word_exists {
