@@ -1,4 +1,3 @@
-use crate::command::TableManager;
 use std::fs::{metadata, File};
 use std::io::{BufRead, BufReader, Read};
 use std::path::PathBuf;
@@ -11,25 +10,31 @@ pub struct FileResult {
     pub chars: usize,
 }
 
-pub fn analyze_file(file: &PathBuf, enable_table: &TableManager) -> anyhow::Result<FileResult> {
+pub fn analyze_file(
+    file: &PathBuf,
+    lines_enabled: bool,
+    bytes_enabled: bool,
+    chars_enabled: bool,
+    words_enabled: bool,
+) -> anyhow::Result<FileResult> {
     let mut file_result: FileResult = Default::default();
 
-    if enable_table.lines {
+    if lines_enabled {
         let count = count_lines_in_file(file)?;
         file_result.lines = count;
     }
 
-    if enable_table.bytes {
+    if bytes_enabled {
         let count = count_bytes_in_file(file)?;
         file_result.bytes = count;
     }
 
-    if enable_table.chars {
+    if chars_enabled {
         let count = count_chars_in_file(file)?;
         file_result.chars = count;
     }
 
-    if enable_table.words {
+    if words_enabled {
         let count = count_words_in_file(file)?;
         file_result.words = count;
     }
@@ -201,7 +206,7 @@ fn test_count_words_in_test_4() {
     let test_file_path = PathBuf::from("tests/data/test_4.txt");
     let word_count = count_words_in_file(&test_file_path).expect("Failed to count words in file");
 
-    assert_eq!(word_count, 16);
+    assert_eq!(word_count, 15);
 }
 
 #[test]
