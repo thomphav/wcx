@@ -5,6 +5,8 @@ use prettytable::{
 };
 use std::path::PathBuf;
 
+/// Used to keep track of the String titles that the TableManager will insert into the header row
+/// of the prettyTable::Table
 struct TableHeaders {
     lines: String,
     bytes: String,
@@ -13,6 +15,17 @@ struct TableHeaders {
     file: String,
 }
 
+/// Adds up total counts for each wcx flag enabled.
+///
+///
+/// New instances of `TotalsCounter` are obtained via [`TotalsCounter::new(files_len)`], where `files_len` is the number of
+/// files being provided to the TableManager. The TotalsCounter will be set to 'enabled' if more than one file is provided.
+
+///
+/// See function level documentation for details on the various configuration
+/// settings.
+///
+/// [`build`]: method@Self::add_to_totals
 pub struct TotalsCounter {
     enabled: bool,
     lines_total: usize,
@@ -40,6 +53,24 @@ impl TotalsCounter {
     }
 }
 
+/// Builds TableManager with provided enable flags and prettytable::format::TableFormat configuration.
+///
+/// Methods can be chained in order to set the configuration values. The
+/// TableManager is constructed by calling [`build(files_len)`], where `files_len` is the number of
+/// files being provided to the TableManager. The TableManager will sum up totals in
+/// the last row of the table if more than one file is provided.
+///
+/// New instances of `Builder` are obtained via [`Builder::new`]
+///
+/// # Example
+///
+/// ```
+///    // build table manager
+///    let table_manager = Builder::new()
+///        .enable_flags(false, true, true, false)
+///        .table_format(*format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR)
+///        .build(files_len)
+/// ```
 pub struct Builder {
     lines_enabled: bool,
     bytes_enabled: bool,
@@ -49,6 +80,9 @@ pub struct Builder {
 }
 
 impl Builder {
+    /// Returns a new builder.
+    ///
+    /// Configuration methods can be chained on the return value.
     pub fn new() -> Builder {
         Builder {
             lines_enabled: false,
@@ -59,6 +93,14 @@ impl Builder {
         }
     }
 
+    /// Enables each of the four wcx count modes onto the TableManager.
+    ///
+    /// lines_enabled: The number of lines in each input file is written to the table.
+    /// bytes_enabled: The number of bytes in each input file is written to the table.
+    /// chars_enabled: The number of characters in each input file is written to the table.
+    /// words_enablec: The number of words in each input file is written to the table.
+    ///
+    /// If no flags are provided, each of the count modes will be written to the table.
     pub fn enable_flags(
         &mut self,
         lines_enabled: bool,
@@ -69,17 +111,25 @@ impl Builder {
         let default: bool = !lines_enabled && !bytes_enabled && !chars_enabled && !words_enabled;
 
         self.lines_enabled = lines_enabled || default;
-        self.bytes_enabled = (bytes_enabled || default) && !chars_enabled;
-        self.chars_enabled = chars_enabled;
+        self.bytes_enabled = bytes_enabled || default;
+        self.chars_enabled = chars_enabled || default;
         self.words_enabled = words_enabled || default;
         self
     }
 
+    /// Updates table format configuration value, which will be updated onto the actual table once
+    /// Builder::build is called
     pub fn table_format(&mut self, table_format: TableFormat) -> &mut Self {
         self.table_format = Some(table_format);
         self
     }
 
+    /// Creates the `Table` and sets its format if one was provided. Uses the enable flags to
+    /// correctly insert titles into the header row of the `Table`.
+    ///
+    /// Then creates the configured `TableManager`, which houses the enable flags, `Table`, and
+    /// `TotalsCounter`. The returned `TableManager` can now be used to add more rows to the table.
+    ///
     pub fn build(&mut self, files_len: usize) -> TableManager {
         let totals_counter: TotalsCounter = TotalsCounter::new(files_len);
 
@@ -247,8 +297,6 @@ pub fn invoke(
         .enable_flags(lines_enabled, bytes_enabled, chars_enabled, words_enabled)
         .table_format(format)
         .build(files.len());
-
-    assert!(!(table_manager.bytes_enabled & table_manager.chars_enabled));
 
     for file in files {
         table_manager.set_table_row(file)?;
