@@ -1,5 +1,5 @@
-use std::fs::{metadata, File};
-use std::io::{BufRead, BufReader, Read};
+use std::fs::{metadata, read_to_string, File};
+use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 
 #[derive(Default)]
@@ -30,12 +30,12 @@ pub fn analyze_file(
     }
 
     if chars_enabled {
-        let count = count_chars_in_file(file)?;
+        let count = count_chars_in_file(file);
         file_result.chars = count;
     }
 
     if words_enabled {
-        let count = count_words_in_file(file)?;
+        let count = count_words_in_file(file);
         file_result.words = count;
     }
 
@@ -44,7 +44,7 @@ pub fn analyze_file(
 
 fn count_bytes_in_file(file: &PathBuf) -> anyhow::Result<usize> {
     let metadata = metadata(file)?;
-    let count = metadata.len() as usize;
+    let count = usize::try_from(metadata.len())?;
 
     return Ok(count);
 }
@@ -56,37 +56,21 @@ fn count_lines_in_file(file: &PathBuf) -> anyhow::Result<usize> {
     return Ok(count);
 }
 
-fn count_words_in_file(file: &PathBuf) -> anyhow::Result<usize> {
-    let mut words_reader = BufReader::new(File::open(file)?);
-    let mut byte = [0; 1];
-    let mut word_exists: bool = false;
-    let mut count = 0;
-    let delimiters = b"' '\n\t\r";
-    while words_reader.read(&mut byte)? != 0 {
-        if delimiters.contains(&byte[0]) {
-            if word_exists {
-                count += 1;
-                word_exists = false;
-                continue;
-            }
-        }
-
-        if word_exists == false {
-            word_exists = true;
-        }
-    }
-
-    return Ok(count);
-}
-
-fn count_chars_in_file(file: &PathBuf) -> anyhow::Result<usize> {
-    let mut chars_reader = BufReader::new(File::open(file)?);
-    let mut buffer = Vec::new();
-    chars_reader.read_to_end(&mut buffer)?;
-    let decoded_string = String::from_utf8_lossy(&buffer);
+fn count_chars_in_file(file: &PathBuf) -> usize {
+    let decoded_string = read_to_string(file).expect(
+        "Failed to read file. Note: character count (`-m`) only works with valid UTF-8 encoded files.",
+    );
     let count = decoded_string.chars().count();
 
-    return Ok(count);
+    return count;
+}
+
+fn count_words_in_file(file: &PathBuf) -> usize {
+    let decoded_string = read_to_string(file)
+        .expect("Failed to read file. Note: word count (`-w`) only works with valid UTF-8 files.");
+    let count = decoded_string.split_whitespace().count();
+
+    return count;
 }
 
 #[test]
