@@ -91,7 +91,7 @@ fn count_chars_in_file(file: &PathBuf) -> anyhow::Result<usize> {
 
 #[test]
 fn test_count_bytes_in_test_1() {
-    let test_file_path = PathBuf::from("tests/data/test_1.txt");
+    let test_file_path = PathBuf::from("assets/test_1.txt");
     let byte_count = count_bytes_in_file(&test_file_path).expect("Failed to count bytes in file");
 
     assert_eq!(byte_count, 449);
@@ -99,7 +99,7 @@ fn test_count_bytes_in_test_1() {
 
 #[test]
 fn test_count_lines_in_test_1() {
-    let test_file_path = PathBuf::from("tests/data/test_1.txt");
+    let test_file_path = PathBuf::from("assets/test_1.txt");
     let line_count = count_lines_in_file(&test_file_path).expect("Failed to count lines in file");
 
     assert_eq!(line_count, 1);
@@ -107,7 +107,7 @@ fn test_count_lines_in_test_1() {
 
 #[test]
 fn test_count_words_in_test_1() {
-    let test_file_path = PathBuf::from("tests/data/test_1.txt");
+    let test_file_path = PathBuf::from("assets/test_1.txt");
     let word_count = count_words_in_file(&test_file_path).expect("Failed to count words in file");
 
     assert_eq!(word_count, 70);
@@ -115,7 +115,7 @@ fn test_count_words_in_test_1() {
 
 #[test]
 fn test_count_chars_in_test_1() {
-    let test_file_path = PathBuf::from("tests/data/test_1.txt");
+    let test_file_path = PathBuf::from("assets/test_1.txt");
     let char_count = count_chars_in_file(&test_file_path).expect("Failed to count chars in file");
 
     assert_eq!(char_count, 449);
@@ -123,7 +123,7 @@ fn test_count_chars_in_test_1() {
 
 #[test]
 fn test_count_bytes_in_test_2() {
-    let test_file_path = PathBuf::from("tests/data/test_2.txt");
+    let test_file_path = PathBuf::from("assets/test_2.txt");
     let byte_count = count_bytes_in_file(&test_file_path).expect("Failed to count bytes in file");
 
     assert_eq!(byte_count, 3);
@@ -131,7 +131,7 @@ fn test_count_bytes_in_test_2() {
 
 #[test]
 fn test_count_lines_in_test_2() {
-    let test_file_path = PathBuf::from("tests/data/test_2.txt");
+    let test_file_path = PathBuf::from("assets/test_2.txt");
     let line_count = count_lines_in_file(&test_file_path).expect("Failed to count lines in file");
 
     assert_eq!(line_count, 1);
@@ -139,7 +139,7 @@ fn test_count_lines_in_test_2() {
 
 #[test]
 fn test_count_words_in_test_2() {
-    let test_file_path = PathBuf::from("tests/data/test_2.txt");
+    let test_file_path = PathBuf::from("assets/test_2.txt");
     let word_count = count_words_in_file(&test_file_path).expect("Failed to count words in file");
 
     assert_eq!(word_count, 1);
@@ -147,7 +147,7 @@ fn test_count_words_in_test_2() {
 
 #[test]
 fn test_count_chars_in_test_2() {
-    let test_file_path = PathBuf::from("tests/data/test_2.txt");
+    let test_file_path = PathBuf::from("assets/test_2.txt");
     let char_count = count_chars_in_file(&test_file_path).expect("Failed to count chars in file");
 
     assert_eq!(char_count, 2);
@@ -155,7 +155,7 @@ fn test_count_chars_in_test_2() {
 
 #[test]
 fn test_count_bytes_in_test_3() {
-    let test_file_path = PathBuf::from("tests/data/test_3.txt");
+    let test_file_path = PathBuf::from("assets/test_3.txt");
     let byte_count = count_bytes_in_file(&test_file_path).expect("Failed to count bytes in file");
 
     assert_eq!(byte_count, 0);
@@ -163,7 +163,7 @@ fn test_count_bytes_in_test_3() {
 
 #[test]
 fn test_count_lines_in_test_3() {
-    let test_file_path = PathBuf::from("tests/data/test_3.txt");
+    let test_file_path = PathBuf::from("assets/test_3.txt");
     let line_count = count_lines_in_file(&test_file_path).expect("Failed to count lines in file");
 
     assert_eq!(line_count, 0);
@@ -171,7 +171,7 @@ fn test_count_lines_in_test_3() {
 
 #[test]
 fn test_count_words_in_test_3() {
-    let test_file_path = PathBuf::from("tests/data/test_3.txt");
+    let test_file_path = PathBuf::from("assets/test_3.txt");
     let word_count = count_words_in_file(&test_file_path).expect("Failed to count words in file");
 
     assert_eq!(word_count, 0);
@@ -179,7 +179,7 @@ fn test_count_words_in_test_3() {
 
 #[test]
 fn test_count_chars_in_test_3() {
-    let test_file_path = PathBuf::from("tests/data/test_3.txt");
+    let test_file_path = PathBuf::from("assets/test_3.txt");
     let char_count = count_chars_in_file(&test_file_path).expect("Failed to count chars in file");
 
     assert_eq!(char_count, 0);
@@ -187,7 +187,7 @@ fn test_count_chars_in_test_3() {
 
 #[test]
 fn test_count_bytes_in_test_4() {
-    let test_file_path = PathBuf::from("tests/data/test_4.txt");
+    let test_file_path = PathBuf::from("assets/test_4.txt");
     let byte_count = count_bytes_in_file(&test_file_path).expect("Failed to count bytes in file");
 
     assert_eq!(byte_count, 125);
@@ -195,7 +195,7 @@ fn test_count_bytes_in_test_4() {
 
 #[test]
 fn test_count_lines_in_test_4() {
-    let test_file_path = PathBuf::from("tests/data/test_4.txt");
+    let test_file_path = PathBuf::from("assets/test_4.txt");
     let line_count = count_lines_in_file(&test_file_path).expect("Failed to count lines in file");
 
     assert_eq!(line_count, 6);
@@ -203,7 +203,7 @@ fn test_count_lines_in_test_4() {
 
 #[test]
 fn test_count_words_in_test_4() {
-    let test_file_path = PathBuf::from("tests/data/test_4.txt");
+    let test_file_path = PathBuf::from("assets/test_4.txt");
     let word_count = count_words_in_file(&test_file_path).expect("Failed to count words in file");
 
     assert_eq!(word_count, 15);
@@ -211,7 +211,7 @@ fn test_count_words_in_test_4() {
 
 #[test]
 fn test_count_chars_in_test_4() {
-    let test_file_path = PathBuf::from("tests/data/test_4.txt");
+    let test_file_path = PathBuf::from("assets/test_4.txt");
     let char_count = count_chars_in_file(&test_file_path).expect("Failed to count chars in file");
 
     assert_eq!(char_count, 83);
