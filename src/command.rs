@@ -179,6 +179,9 @@ impl Builder {
     }
 }
 
+/// The TableManager is responsible for orchestrating the process building each row of the table
+/// according to the enabled flags that are set, and using it's TotalsCounter to build the final row if needed
+///
 pub struct TableManager {
     pub lines_enabled: bool,
     pub bytes_enabled: bool,
