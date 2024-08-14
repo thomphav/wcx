@@ -20,12 +20,6 @@ struct TableHeaders {
 ///
 /// New instances of `TotalsCounter` are obtained via [`TotalsCounter::new(files_len)`], where `files_len` is the number of
 /// files being provided to the TableManager. The TotalsCounter will be set to 'enabled' if more than one file is provided.
-
-///
-/// See function level documentation for details on the various configuration
-/// settings.
-///
-/// [`build`]: method@Self::add_to_totals
 pub struct TotalsCounter {
     enabled: bool,
     lines_total: usize,
@@ -179,6 +173,9 @@ impl Builder {
     }
 }
 
+/// The TableManager is responsible for orchestrating the process building each row of the table
+/// according to the enabled flags that are set, and using it's TotalsCounter to build the final row if needed
+///
 pub struct TableManager {
     pub lines_enabled: bool,
     pub bytes_enabled: bool,
