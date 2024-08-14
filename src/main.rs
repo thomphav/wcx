@@ -1,34 +1,7 @@
-use clap::{Parser, Subcommand};
-use std::{path::PathBuf, process::ExitCode};
-pub mod analyze;
-pub mod wc;
-
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
-struct Args {
-    #[command(subcommand)]
-    command: Command,
-}
-
-#[derive(Debug, Subcommand)]
-enum Command {
-    Wc {
-        #[arg(short = 'c')]
-        bytes: bool,
-
-        #[arg(short = 'l')]
-        lines: bool,
-
-        #[arg(short = 'm')]
-        chars: bool,
-
-        #[arg(short = 'w')]
-        words: bool,
-
-        #[arg(required = true, num_args = 1..)]
-        files: Vec<PathBuf>,
-    },
-}
+use std::process::ExitCode;
+mod analyze;
+mod cli;
+mod command;
 
 fn main() -> ExitCode {
     match run() {
@@ -41,17 +14,21 @@ fn main() -> ExitCode {
 }
 
 fn run() -> anyhow::Result<()> {
-    let args = Args::parse();
+    let cli::Args {
+        lines_enabled,
+        bytes_enabled,
+        chars_enabled,
+        words_enabled,
+        files,
+    } = cli::Args::parse_args();
 
-    match args.command {
-        Command::Wc {
-            bytes,
-            lines,
-            chars,
-            words,
-            files,
-        } => wc::invoke(bytes, lines, chars, words, &files)?,
-    }
+    command::invoke(
+        lines_enabled,
+        bytes_enabled,
+        chars_enabled,
+        words_enabled,
+        &files,
+    )?;
 
     Ok(())
 }
