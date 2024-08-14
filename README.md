@@ -1,6 +1,6 @@
 # wcx
 
-wcx replaces your default wc command with a `wcx` command...
+wcx replaces your default wc command with a cleaner and more user-friendly output.
 
 `-c`: The number of bytes in each input file is written to the standard output.\
 `-l`: The number of lines in each input file is written to the standard output.\
