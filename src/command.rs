@@ -119,8 +119,22 @@ impl Builder {
 
     /// Updates table format configuration value, which will be updated onto the actual table once
     /// Builder::build is called
-    pub fn table_format(&mut self, table_format: TableFormat) -> &mut Self {
-        self.table_format = Some(table_format);
+    pub fn table_format(&mut self, format: &String) -> &mut Self {
+        let format = match format.as_str() {
+            "default" => *format::consts::FORMAT_DEFAULT,
+            "no_title" => *format::consts::FORMAT_NO_TITLE,
+            "no_linesep_with_title" => *format::consts::FORMAT_NO_LINESEP_WITH_TITLE,
+            "no_linesep" => *format::consts::FORMAT_NO_LINESEP,
+            "no_colsep" => *format::consts::FORMAT_NO_COLSEP,
+            "format_clean" => *format::consts::FORMAT_CLEAN,
+            "borders_only" => *format::consts::FORMAT_BORDERS_ONLY,
+            "no_border" => *format::consts::FORMAT_NO_BORDER,
+            "no_border_line_separator" => *format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR,
+            "box_chars" => *format::consts::FORMAT_BOX_CHARS,
+            _ => *format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR,
+        };
+
+        self.table_format = Some(format);
         self
     }
 
@@ -292,10 +306,9 @@ pub fn invoke(
     bytes_enabled: bool,
     chars_enabled: bool,
     words_enabled: bool,
+    format: &String,
     files: &Vec<PathBuf>,
 ) -> anyhow::Result<()> {
-    let format = *format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR;
-
     let mut table_manager = Builder::new()
         .enable_flags(lines_enabled, bytes_enabled, chars_enabled, words_enabled)
         .table_format(format)

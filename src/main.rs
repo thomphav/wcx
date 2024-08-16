@@ -19,6 +19,7 @@ fn run() -> anyhow::Result<()> {
         bytes_enabled,
         chars_enabled,
         words_enabled,
+        format,
         files,
     } = cli::Args::parse_args();
 
@@ -27,6 +28,7 @@ fn run() -> anyhow::Result<()> {
         bytes_enabled,
         chars_enabled,
         words_enabled,
+        &format,
         &files,
     )?;
 
