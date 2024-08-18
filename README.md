@@ -7,9 +7,9 @@ Usage
 Usage: wcx [OPTIONS] [FILES]
 
 Options:
-  -c: The number of bytes in each input file.\
-  -l: The number of lines in each input file.\
-  -m: The number of characters in each input file.\
+  -c: The number of bytes in each input file.
+  -l: The number of lines in each input file.
+  -m: The number of characters in each input file.
   -w: The number of words in each input file.
 
   If none of the abovee are provided, all 4 file count modes will be displayed.
